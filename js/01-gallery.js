@@ -25,18 +25,29 @@ gallety.addEventListener("click", openModal);
 function openModal(event) {
   event.preventDefault();
   const itemElement = event.target;
-  if (itemElement.nodeName !== "IMG") {
+  if (event.target === event.currentTarget) {
     return;
   }
 
-  const instance = basicLightbox.create(`
-        <img src="${itemElement.dataset.source}" width="800" height="600">
-    `);
+  const instance = basicLightbox.create(
+    `
+        <img src="${itemElement.dataset.source}">
+    `,
+    {
+      onShown: addEscapeClose(),
+      onClose: () => document.removeEventListener("keydown", close),
+    }
+  );
   instance.show();
 
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
-      instance.close();
-    }
-  });
+  function addEscapeClose() {
+    document.addEventListener(
+      "keydown",
+      (close = (event) => {
+        if (event.key === "Escape") {
+          instance.close();
+        }
+      })
+    );
+  }
 }
